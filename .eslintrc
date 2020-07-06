@@ -1,0 +1,36 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "linebreak-style": 0,
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "func-name-matching": [
+            "error",
+            "always"
+        ]
+    },
+    "globals": {
+        "jest": false,
+        "describe": false,
+        "beforeEach": false,
+        "test": false,
+        "expect": false
+    }
+}
