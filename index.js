@@ -1,6 +1,14 @@
 const AWS = require('aws-sdk');
 const util = require('util');
 
+const TARGET_TYPES = {
+    RoomName: 'RoomName',
+    ProfileName: 'ProfileName',
+    RoomArn: 'RoomArn',
+    ProfileArn: 'ProfileArn'
+}
+
+// Params base object
 var paramsBase = {
     Content: { 
         TextList: [
@@ -15,13 +23,6 @@ var paramsBase = {
 }
 
 var params = {};
-
-const TARGET_TYPES = {
-    RoomName: 'RoomName',
-    ProfileName: 'ProfileName',
-    RoomArn: 'RoomArn',
-    ProfileArn: 'ProfileArn'
-}
 
 /**
  * Base class for an announcement target
@@ -85,17 +86,22 @@ class Announcer {
         }
 
         // Use credentials specified if they were specified
-        if(options.accessKeyId && options.secretAccessKeyId) {
+        if(options && options.accessKeyId && options.secretAccessKeyId) {
             options.credentials = AWS.Credentials({
                 accessKeyId: options.accessKeyId,
                 secretAccessKeyId: options.secretAccessKeyId
             });
         }
 
-        if(options.region === undefined) options.region = 'us-east-1';
+        if(options && !options.region && !process.env.AWS_REGION) {
+            options.region = 'us-east-1';
+        } 
 
         // Setup AWS pieces
-        AWS.config.update(options);
+        if(options) {
+            AWS.config.update(options);
+        }
+
         this.a4b = new AWS.AlexaForBusiness();
         this.a4b.sendAnnouncement = util.promisify(this.a4b.sendAnnouncement);
 
@@ -104,8 +110,8 @@ class Announcer {
         
         if (options) {
             // Init options
-            if ('timeToLiveInSeconds' in options) params.TimeToLiveInSeconds = options.timeToLiveInSeconds;
-            if ('clientRequestToken' in options) params.ClientRequestToken = options.clientRequestToken;
+            if (options.timeToLiveInSeconds) params.TimeToLiveInSeconds = options.timeToLiveInSeconds;
+            if (options.clientRequestToken) params.ClientRequestToken = options.clientRequestToken;
         }
 
         // Function bindings
@@ -152,11 +158,13 @@ class Announcer {
      * Announce the text specified.
      * If called before you've specified targets by "addTargets()"
      * the announcement will be made on all available targets
+     * 
+     * @todo: This currently only supports the TextList so you can't do SSML or other formats
      * @param {string} text Text to announce via Alexa for Business
      */
     async announce(text) {
         // Validate input
-        if(!(typeof text === "string")) throw new Error('announce() requires a string as a parameter');
+        if(typeof text !== "string") throw new Error('announce() requires a string as a parameter');
         if(text.length > 250) throw new Error('250 character max for announcement text');
 
         // Set text to announce

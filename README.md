@@ -12,7 +12,9 @@ The best-case scenario is running this in a Lambda where env vars supply auth va
 const aa = require('alexa-announce');
 const Announcer = new aa.Announcer();
 
-(async () => await Announcer.announce('Hello'))();
+module.exports.handler = async(_event) => {
+    await Announcer.announce('Hello world');
+}
 ```
 
 If you're running locally (or somewhere else) you'll need to specify credentials and optionally region like this:
@@ -68,7 +70,6 @@ const Announcer = new aa.Announcer(options);
     console.log(JSON.stringify(result));
 })();
 ```
-If you're running on a platform where the standard AWS env vars are not defined, you'll need to specify your credentials (and region, optionally) yourself. 
 
 # Methods
 
@@ -87,6 +88,8 @@ The output of the `announce()` method is just the output of the `SendAnnouncemen
 ### addTargets
 `addTargets(arrayOfTargets)`
 
+See example 3 above.
+
 ### clearTargets
 `clearTargets()`
 
@@ -99,5 +102,7 @@ No parameters or return value.  Clears any targets specified previously and targ
 
 # Resources
 AWS Environment Variables: https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime
+
 API Reference for `sendAnnouncement`: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AlexaForBusiness.html#sendAnnouncement-property
+
 API Guide for SendAnnouncement: https://docs.aws.amazon.com/a4b/latest/APIReference/API_SendAnnouncement.html
