@@ -28,13 +28,10 @@ var params = {};
  * Base class for an announcement target
  */
 class Target {
-    constructor(type, filters) {
+    constructor(type = TARGET_TYPES.RoomName, filters = []) {
         this.type = type;
         this.filters = filters;
     }
-
-    type = TARGET_TYPES.RoomName
-    filters = []
 }
 
 /**
